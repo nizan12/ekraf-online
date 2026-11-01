@@ -65,6 +65,8 @@ export default async function HalamanKatalog({ searchParams }) {
       query = query.order("harga", { ascending: true });
     } else if (urutan === "termahal") {
       query = query.order("harga", { ascending: false });
+    } else if (urutan === "terbaru") {
+      query = query.order("created_at", { ascending: false });
     } else if (urutan === "nama") {
       query = query.order("nama", { ascending: true });
     } else {

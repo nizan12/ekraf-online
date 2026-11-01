@@ -73,9 +73,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Migrasi model Gemini aktif ke `gemini-flash-latest`.
 
 ## US-15: Urutkan produk
-- **Prompt:** Opsi sortir produk termurah, termahal, dan terbaru via query Supabase.
-- **Hasil:** Berhasil. Parameter `urutan` diterjemahkan ke `.order()` di server.
-- **Perbaikan:** Sort harga dilakukan di database, bukan di tampilan.
+- **Prompt:** Opsi sortir produk termurah, termahal, terbaru, dan nama (A-Z) pada FilterProduk dan query Supabase.
+- **Hasil:** Berhasil. Dropdown FilterProduk menyediakan opsi Terbaru, Termurah, Termahal, dan Nama (A-Z). Query di `app/page.jsx`, `app/kategori/[slug]/page.jsx`, dan `/api/produk` menangani `urutan=terbaru` dengan `.order("created_at", { ascending: false })`.
+- **Perbaikan:** Menambahkan opsi Terbaru pada select FilterProduk dan handler `urutan === "terbaru"` pada query database di `app/page.jsx`.
 
 ## US-16: Paginasi produk
 - **Prompt:** Paginasi katalog produk dengan range 6 per halaman dan navigasi Sebelumnya/Selanjutnya.

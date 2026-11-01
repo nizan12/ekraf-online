@@ -54,6 +54,7 @@ export default function FilterProduk({ kategoriList = [] }) {
             className="rounded-xl border border-garis bg-latar px-3 py-1.5 text-xs text-teks focus:border-utama focus:outline-none"
           >
             <option value="">Pilihan Utama</option>
+            <option value="terbaru">Terbaru</option>
             <option value="termurah">Termurah</option>
             <option value="termahal">Termahal</option>
             <option value="nama">Nama (A-Z)</option>
