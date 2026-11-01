@@ -178,9 +178,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Escape karakter koma dan tanda kutip pada kolom deskripsi.
 
 ## US-36: Terakhir dilihat
-- **Prompt:** Tampilkan daftar produk yang baru saja dibuka pengunjung di beranda dan detail produk.
-- **Hasil:** Berhasil. `components/TerakhirDilihat.jsx` menyimpan riwayat di localStorage maks 6 produk.
-- **Perbaikan:** Pengecekan duplikasi ID produk pada daftar riwayat.
+- **Prompt:** Komponen Terakhir Dilihat dengan batas maksimal 6 produk di localStorage (`BATAS_JUMLAH = 6`) dan disembunyikan seutuhnya saat riwayat kosong.
+- **Hasil:** Berhasil. `app/TerakhirDilihat.jsx` mengelola penyimpanan riwayat maksimal 6 produk (`BATAS_JUMLAH = 6`) di localStorage dan mengembalikan `null` jika riwayat kosong atau belum mounted di browser.
+- **Perbaikan:** Menjadikan komponen mengembalikan `null` saat `!mounted || daftar.length === 0` sehingga judul dan bagian Terakhir Dilihat tidak dirender sama sekali saat kosong.
 
 ## US-37: Bandingkan 2 produk
 - **Prompt:** Halaman pembanding spesifikasi, foto, dan harga 2 produk secara berdampingan di `/bandingkan`.

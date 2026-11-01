@@ -1,7 +1,7 @@
 import KartuProduk from "@/components/KartuProduk";
 import FilterProduk from "@/components/FilterProduk";
 import Paginasi from "@/components/Paginasi";
-import TerakhirDilihat from "@/components/TerakhirDilihat";
+import TerakhirDilihat from "./TerakhirDilihat";
 import BannerPromo from "@/components/BannerPromo";
 import { toko } from "@/lib/toko";
 import { buatClientServer, normalisasiDaftarProduk } from "@/lib/supabase";
