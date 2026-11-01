@@ -77,7 +77,18 @@ export async function proxy(request) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+    const res = NextResponse.redirect(new URL("/admin/login", request.url));
+    res.headers.set("X-Robots-Tag", "noindex, nofollow");
+    res.headers.set("X-Frame-Options", "DENY");
+    res.headers.set("X-Content-Type-Options", "nosniff");
+    return res;
+  }
+
+  supabaseResponse.headers.set("X-Frame-Options", "DENY");
+  supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
+  supabaseResponse.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  if (pathname.startsWith("/admin")) {
+    supabaseResponse.headers.set("X-Robots-Tag", "noindex, nofollow");
   }
 
   return supabaseResponse;
