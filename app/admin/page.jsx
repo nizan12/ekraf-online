@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Tombol from "@/components/Tombol";
 import NavAdmin from "@/components/NavAdmin";
-import TabelProduk from "@/components/TabelProduk";
+import TabelProduk from "./TabelProduk";
 import FormImporCSV from "@/components/admin/FormImporCSV";
 import { buatClientServer, normalisasiDaftarProduk } from "@/lib/supabase";
 import { ambilPengaturanAdmin } from "@/lib/pengaturanAdmin";

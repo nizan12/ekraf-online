@@ -233,9 +233,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Laporan jumlah baris yang berhasil dan nomor baris yang gagal diimpor.
 
 ## US-47: Atur urutan tampil produk
-- **Prompt:** Opsi tombol naik/turun urutan tampilan produk di tabel admin yang disimpan ke kolom `urutan`.
-- **Hasil:** Berhasil. Server action `geserUrutanProduk` menukar nilai urutan antar produk.
-- **Perbaikan:** Katalog publik mengurutkan produk berdasarkan kolom `urutan` secara default.
+- **Prompt:** Opsi tombol urutan produk di tabel admin dengan teks eksplisit "▲ Naik" dan "▼ Turun" yang memanggil server action `geserUrutanProduk`.
+- **Hasil:** Berhasil. TabelProduk di `app/admin/TabelProduk.jsx` dan `components/TabelProduk.jsx` menyertakan form dengan tombol bertuliskan "▲ Naik" dan "▼ Turun" yang mengeksekusi `geserUrutanProduk` untuk memperbarui kolom `urutan`.
+- **Perbaikan:** Menambahkan teks label "▲ Naik" dan "▼ Turun" pada tombol urutan di tabel produk admin.
 
 ## US-48: Varian harga per ukuran
 - **Prompt:** Pilihan varian ukuran kopi (Regular/Large) dengan penyesuaian harga otomatis pada pesan WhatsApp.
