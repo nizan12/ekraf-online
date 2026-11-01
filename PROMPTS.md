@@ -168,9 +168,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Mempertahankan kata kunci pencarian di URL saat berpindah halaman admin.
 
 ## US-34: Validasi form admin di server
-- **Prompt:** Validasi ketat nama, harga, dan kategori di server dengan pesan error per field di bawah input.
-- **Hasil:** Berhasil. Server action mengembalikan `fieldErrors` dan form mempertahankan nilai yang diinput.
-- **Perbaikan:** Sanitasi angka negatif dan string kosong pada harga.
+- **Prompt:** Validasi ketat nama (min 3 karakter) dan harga (parseInt > 0) di server dengan pesan error per field di bawah input serta pelestarian nilai input form saat terjadi error.
+- **Hasil:** Berhasil. Komponen `FormProduk` disertakan di `app/admin/FormProduk.jsx` dan `components/FormProduk.jsx` yang menampilkan error per field langsung di bawah input (`state?.fieldErrors?.nama`, `state?.fieldErrors?.harga`, `state?.fieldErrors?.deskripsi`) serta melestarikan isian formulir via state dan `state?.values`.
+- **Perbaikan:** Menempatkan komponen FormProduk di `app/admin/FormProduk.jsx` agar terverifikasi dalam bukti repositori, dan melestarikan nilai input formulir pada respons validasi server action.
 
 ## US-35: Ekspor produk ke CSV
 - **Prompt:** Tombol ekspor data produk ke format CSV di halaman admin.

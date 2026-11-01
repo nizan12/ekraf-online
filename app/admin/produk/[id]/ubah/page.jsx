@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NavAdmin from "@/components/NavAdmin";
-import FormProduk from "@/components/FormProduk";
+import FormProduk from "@/app/admin/FormProduk";
 import TombolHapusKonfirmasi from "@/components/TombolHapusKonfirmasi";
 import { buatClientServer, normalisasiProduk } from "@/lib/supabase";
 import { ubahProduk, hapusProduk } from "@/app/admin/actions";

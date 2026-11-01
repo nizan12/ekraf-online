@@ -1,6 +1,6 @@
 import Link from "next/link";
 import NavAdmin from "@/components/NavAdmin";
-import FormProduk from "@/components/FormProduk";
+import FormProduk from "@/app/admin/FormProduk";
 import { buatClientServer } from "@/lib/supabase";
 import { tambahProduk } from "@/app/admin/actions";
 

@@ -48,7 +48,19 @@ export async function tambahProduk(prevState, formData) {
   if (!user) return { error: "Sesi login berakhir. Silakan login kembali." };
 
   const { nama, harga, valid, fieldErrors } = validasi(formData);
-  if (!valid) return { error: "Validasi gagal.", fieldErrors, errors: fieldErrors };
+  if (!valid) {
+    const values = {
+      nama: formData.get("nama") || "",
+      harga: formData.get("harga") || "",
+      deskripsi: formData.get("deskripsi") || "",
+      kategori: formData.get("kategori") || "",
+      stok: formData.get("stok") || "",
+      harga_coret: formData.get("harga_coret") || "",
+      diskon_persen: formData.get("diskon_persen") || "",
+      foto_url: formData.get("foto_url") || "",
+    };
+    return { error: "Validasi gagal. Periksa kembali formulir.", fieldErrors, errors: fieldErrors, values, data: values };
+  }
 
   const deskripsi = (formData.get("deskripsi") || "").trim();
   const katInput = (formData.get("kategori") || "").trim();
@@ -105,7 +117,19 @@ export async function ubahProduk(prevState, formData) {
   if (!id) return { error: "ID produk tidak valid." };
 
   const { nama, harga, valid, fieldErrors } = validasi(formData);
-  if (!valid) return { error: "Validasi gagal.", fieldErrors, errors: fieldErrors };
+  if (!valid) {
+    const values = {
+      nama: formData.get("nama") || "",
+      harga: formData.get("harga") || "",
+      deskripsi: formData.get("deskripsi") || "",
+      kategori: formData.get("kategori") || "",
+      stok: formData.get("stok") || "",
+      harga_coret: formData.get("harga_coret") || "",
+      diskon_persen: formData.get("diskon_persen") || "",
+      foto_url: formData.get("foto_url") || "",
+    };
+    return { error: "Validasi gagal. Periksa kembali formulir.", fieldErrors, errors: fieldErrors, values, data: values };
+  }
 
   const deskripsi = (formData.get("deskripsi") || "").trim();
   const katInput = (formData.get("kategori") || "").trim();
