@@ -18,9 +18,7 @@ export default async function sitemap() {
         priority: 0.8,
       }));
     }
-  } catch (err) {
-    console.error("Gagal membuat sitemap produk:", err);
-  }
+  } catch {}
 
   const ruteStatis = [
     {

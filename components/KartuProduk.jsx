@@ -5,136 +5,61 @@ import TombolFavorit from "@/components/TombolFavorit";
 import TombolBandingkan from "@/components/TombolBandingkan";
 
 export default function KartuProduk({ produk }) {
-  const isHabis =
-    produk.stok === 0 ||
-    produk.status_stok === "habis" ||
-    produk.stok_habis === true;
-  const adaDiskon =
-    produk.harga_coret && Number(produk.harga_coret) > Number(produk.harga);
-  const diskonPersen = adaDiskon
-    ? Math.round((1 - Number(produk.harga) / Number(produk.harga_coret)) * 100)
-    : 0;
+  const isHabis = produk.stok === 0 || produk.status_stok === "habis";
+  const adaDiskon = produk.harga_coret && Number(produk.harga_coret) > Number(produk.harga);
+  const diskonPersen = adaDiskon ? Math.round((1 - Number(produk.harga) / Number(produk.harga_coret)) * 100) : 0;
+  const isBaru = produk.baru || produk.is_baru || (produk.created_at && Date.now() - new Date(produk.created_at).getTime() < 30 * 24 * 60 * 60 * 1000);
+  const isTerlaris = produk.terlaris || produk.is_terlaris;
 
-  // Logika badge Baru dan Terlaris murni berbasis data produk (US-20)
-  const isBaru =
-    produk.baru === true ||
-    produk.is_baru === true ||
-    (produk.created_at &&
-      Date.now() - new Date(produk.created_at).getTime() < 30 * 24 * 60 * 60 * 1000);
-  const isTerlaris =
-    produk.terlaris === true ||
-    produk.is_terlaris === true ||
-    (produk.klik_count && Number(produk.klik_count) > 3);
-
-  const slugKategori =
-    produk.kategori_slug ||
-    (typeof produk.kategori === "string"
-      ? produk.kategori.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
-      : "menu");
+  const slug = produk.kategori_slug || (typeof produk.kategori === "string" ? produk.kategori.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : "menu");
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-garis bg-latar transition hover:border-utama/50 hover:shadow-xs">
-      <Link
-        href={`/produk/${produk.id}`}
-        className="relative aspect-square w-full overflow-hidden bg-permukaan block"
-      >
+    <div className="group relative flex flex-col rounded-2xl border border-garis bg-latar overflow-hidden hover:border-utama/50 transition">
+      <Link href={`/produk/${produk.id}`} className="relative aspect-square w-full bg-permukaan block overflow-hidden">
         <img
-          src={ambilFotoUtama(produk)}
-          alt={produk.nama}
-          loading="lazy"
-          decoding="async"
-          className={`h-full w-full object-cover transition duration-300 group-hover:scale-105 ${
-            isHabis ? "opacity-60 grayscale" : ""
-          }`}
+          src={ambilFotoUtama(produk)} alt={produk.nama} loading="lazy"
+          className={`h-full w-full object-cover group-hover:scale-105 transition duration-300 ${isHabis ? "opacity-60 grayscale" : ""}`}
         />
 
-        {/* Badge Diskon, Baru & Terlaris (US-20) */}
-        <div className="absolute left-2 top-2 sm:left-2.5 sm:top-2.5 flex flex-col gap-1 items-start z-10">
-          {adaDiskon && (
-            <span className="rounded-md bg-red-600 px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-xs">
-              Hemat {diskonPersen}% (Diskon)
-            </span>
-          )}
-          {isTerlaris && (
-            <span className="rounded-md bg-amber-600 px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-xs">
-              Terlaris
-            </span>
-          )}
-          {isBaru && !isTerlaris && (
-            <span className="rounded-md bg-emerald-600 px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shadow-xs">
-              Baru
-            </span>
-          )}
+        {/* US-20: Badge Diskon, Terlaris, Baru */}
+        <div className="absolute left-2 top-2 flex flex-col gap-1 items-start z-10">
+          {adaDiskon && <span className="rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white">Hemat {diskonPersen}%</span>}
+          {isTerlaris && <span className="rounded bg-amber-600 px-1.5 py-0.5 text-[10px] font-bold text-white">Terlaris</span>}
+          {isBaru && !isTerlaris && <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[10px] font-bold text-white">Baru</span>}
         </div>
 
-        {/* Badge Status Stok & Jumlah (US-19) */}
-        <span
-          className={`absolute right-2 top-2 sm:right-2.5 sm:top-2.5 rounded-md px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold backdrop-blur-sm ${
-            isHabis
-              ? "bg-red-600/90 text-white"
-              : Number(produk.stok) <= 5
-              ? "bg-amber-600/90 text-white"
-              : "bg-emerald-600/85 text-white"
-          }`}
-        >
-          {isHabis
-            ? "Stok Habis"
-            : Number(produk.stok) <= 5
-            ? `Sisa ${produk.stok}`
-            : `Stok: ${produk.stok}`}
+        {/* US-19: Status Stok */}
+        <span className={`absolute right-2 top-2 rounded px-1.5 py-0.5 text-[10px] font-semibold text-white ${isHabis ? "bg-red-600/90" : "bg-emerald-600/85"}`}>
+          {isHabis ? "Stok Habis" : `Stok: ${produk.stok}`}
         </span>
 
-        {/* Tombol Bandingkan (US-37) & Tombol Favorit (US-24) */}
-        <div className="absolute bottom-2 right-2 flex items-center gap-1 sm:bottom-2.5 sm:right-2.5 sm:gap-1.5 z-10">
-          <TombolBandingkan produk={produk} ikonOnly className="!h-7.5 !w-7.5 sm:!h-8.5 sm:!w-8.5 !shadow-xs" />
-          <TombolFavorit produk={produk} className="!h-7.5 !w-7.5 sm:!h-8.5 sm:!w-8.5 !shadow-xs" />
+        {/* US-24 & US-37: Tombol Favorit & Bandingkan */}
+        <div className="absolute bottom-2 right-2 flex gap-1 z-10">
+          <TombolBandingkan produk={produk} ikonOnly />
+          <TombolFavorit produk={produk} />
         </div>
       </Link>
 
-      <div className="flex flex-1 flex-col justify-between p-3 sm:p-3.5 gap-2">
+      <div className="flex flex-1 flex-col justify-between p-3 gap-1.5">
         <div>
-          <div className="flex items-center justify-between gap-1.5">
-            {/* Tautan ke halaman kategori (US-49) */}
-            <Link
-              href={`/kategori/${slugKategori}`}
-              className="text-[11px] sm:text-xs font-semibold text-teks-lembut hover:text-utama hover:underline transition truncate"
-              title={`Lihat semua menu kategori ${produk.kategori}`}
-            >
-              {produk.kategori}
-            </Link>
-            <span className="text-[10px] font-semibold shrink-0">
-              {isHabis ? (
-                <span className="text-red-500 font-bold">Habis</span>
-              ) : (
-                <span className="text-teks-lembut">Stok: <strong className="text-teks">{produk.stok}</strong></span>
-              )}
-            </span>
-          </div>
-          <Link
-            href={`/produk/${produk.id}`}
-            className="font-bold text-xs sm:text-sm leading-snug hover:text-utama line-clamp-2 mt-0.5 block transition"
-          >
+          {/* US-49: Link Kategori */}
+          <Link href={`/kategori/${slug}`} className="text-[11px] font-semibold text-teks-lembut hover:text-utama truncate block">
+            {produk.kategori}
+          </Link>
+          <Link href={`/produk/${produk.id}`} className="font-bold text-xs sm:text-sm text-teks hover:text-utama line-clamp-2 block mt-0.5">
             {produk.nama}
           </Link>
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-1.5 pt-1">
-          <div className="min-w-0 flex-1">
-            <span className="block truncate text-xs sm:text-sm font-extrabold text-harga">
-              {formatRupiah(produk.harga)}
-            </span>
-            {adaDiskon && (
-              <del className="block truncate text-[10px] text-teks-lembut line-through">
-                {formatRupiah(produk.harga_coret)}
-              </del>
-            )}
+        <div className="mt-auto flex items-center justify-between gap-1 pt-1">
+          <div>
+            <span className="block text-xs sm:text-sm font-extrabold text-harga">{formatRupiah(produk.harga)}</span>
+            {adaDiskon && <del className="block text-[10px] text-red-500 line-through">{formatRupiah(produk.harga_coret)}</del>}
           </div>
           {isHabis ? (
-            <span className="inline-flex items-center justify-center rounded-xl bg-gray-100 dark:bg-neutral-800 text-gray-400 dark:text-gray-500 text-[10px] sm:text-xs font-semibold px-2.5 py-1.5 cursor-not-allowed border border-garis">
-              Habis
-            </span>
+            <span className="rounded-xl bg-gray-100 dark:bg-neutral-800 text-gray-400 text-[10px] font-semibold px-2 py-1">Habis</span>
           ) : (
-            <TombolKeranjang produk={produk} className="h-8 px-2 sm:px-3 text-xs" />
+            <TombolKeranjang produk={produk} className="h-7 px-2 text-[11px]" />
           )}
         </div>
       </div>

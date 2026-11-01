@@ -2,7 +2,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TombolInstallPWA from "@/components/TombolInstallPWA";
-import ModalBandingkan from "@/components/ModalBandingkan";
 import WidgetChatAI from "@/components/WidgetChatAI";
 import { buatClientServer } from "@/lib/supabase";
 import { toko as defaultToko } from "@/lib/toko";
@@ -32,6 +31,7 @@ export const metadata = {
     title: defaultToko.nama,
   },
   icons: {
+    icon: "/icons/icon-192.svg",
     apple: "/icons/icon-192.png",
   },
 };
@@ -43,7 +43,6 @@ export const viewport = {
 export default async function RootLayout({ children }) {
   let toko = defaultToko;
 
-  // US-43: Ambil pengaturan toko langsung dari database Supabase (pengaturan_toko)
   try {
     const supabase = buatClientServer();
     const { data: dbToko } = await supabase
@@ -75,23 +74,11 @@ export default async function RootLayout({ children }) {
         />
         <link rel="manifest" href="/manifest.webmanifest" />
         <script src="/theme-init.js"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function() {});
-                });
-              }
-            `,
-          }}
-        />
       </head>
       <body className="flex min-h-screen flex-col font-sans antialiased" suppressHydrationWarning>
         <Header toko={toko} />
         <main className="mx-auto w-full max-w-5xl flex-1 px-4">{children}</main>
         <Footer toko={toko} />
-        <ModalBandingkan />
         <WidgetChatAI />
         <TombolInstallPWA />
       </body>

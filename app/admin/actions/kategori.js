@@ -3,138 +3,89 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { buatClientSesi, buatClientServer } from "@/lib/supabase";
-import {
-  ambilPengaturanAdmin,
-  simpanPengaturanAdmin,
-  catatLogAktivitas,
-} from "@/lib/pengaturanAdmin";
+import { ambilPengaturanAdmin, simpanPengaturanAdmin, catatLogAktivitas } from "@/lib/pengaturanAdmin";
 
-/**
- * US-31: Kelola Kategori (Tambah, Ubah, Hapus)
- */
 export async function tambahKategoriAdmin(arg1, arg2) {
-  const formData =
-    arg2 && typeof arg2.get === "function"
-      ? arg2
-      : arg1 && typeof arg1.get === "function"
-      ? arg1
-      : null;
-
+  const formData = arg2 && typeof arg2.get === "function" ? arg2 : arg1;
   if (!formData) return { error: "Form data tidak valid." };
 
-  const supabase = await buatClientSesi();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/admin/login");
+  const sbSesi = await buatClientSesi();
+  const { data: { user } } = await sbSesi.auth.getUser();
+  if (!user) redirect("/admin/login");
+
+  const nama = formData.get("nama")?.trim();
+  if (!nama || nama.length < 2) return { error: "Nama minimal 2 karakter." };
+
+  const slug = nama.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const sbServer = buatClientServer();
+  await sbServer.from("kategori").insert({ nama, slug, urutan: 1 });
+
+  const conf = await ambilPengaturanAdmin();
+  const list = Array.isArray(conf.kategoriList) ? [...conf.kategoriList] : [];
+  if (!list.includes(nama)) {
+    list.push(nama);
+    await simpanPengaturanAdmin({ ...conf, kategoriList: list });
   }
 
-  const namaKategori = formData.get("nama")?.trim();
-  if (!namaKategori || namaKategori.length < 2) {
-    return { error: "Nama kategori minimal 2 karakter." };
-  }
-
-  const slug = namaKategori.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  const supabaseServer = buatClientServer();
-  await supabaseServer.from("kategori").insert({ nama: namaKategori, slug, urutan: 1 });
-
-  const pengaturan = await ambilPengaturanAdmin();
-  const kategoriList = Array.isArray(pengaturan.kategoriList) ? [...pengaturan.kategoriList] : [];
-  if (!kategoriList.includes(namaKategori)) {
-    kategoriList.push(namaKategori);
-    await simpanPengaturanAdmin({ ...pengaturan, kategoriList });
-  }
-
-  await catatLogAktivitas("Tambah Kategori", `Menambahkan kategori "${namaKategori}"`);
+  await catatLogAktivitas("Tambah Kategori", `Menambahkan "${nama}"`);
   revalidatePath("/admin/kategori");
   revalidatePath("/admin");
-  return { sukses: "Kategori baru berhasil ditambahkan." };
+  return { sukses: "Kategori ditambahkan." };
 }
 
 export async function ubahKategoriAdmin(formData) {
-  const supabase = await buatClientSesi();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/admin/login");
-  }
+  const sbSesi = await buatClientSesi();
+  const { data: { user } } = await sbSesi.auth.getUser();
+  if (!user) redirect("/admin/login");
 
   const id = formData.get("id");
-  const nama = (
-    formData.get("nama") ||
-    formData.get("namaBaru") ||
-    formData.get("nama_baru")
-  )?.trim();
-  const namaBaru = nama;
-  const nama_lama = (
-    formData.get("nama_lama") ||
-    formData.get("namaLama") ||
-    formData.get("namaOld")
-  )?.trim();
-  const oldKat = nama_lama;
-
-  if (!nama || nama.length < 2) {
-    return { error: "Nama kategori baru minimal 2 karakter." };
-  }
+  const namaBaru = (formData.get("namaBaru") || formData.get("nama"))?.trim();
+  const oldKat = (formData.get("nama_lama") || formData.get("namaLama"))?.trim();
+  if (!namaBaru || namaBaru.length < 2) return { error: "Nama minimal 2 karakter." };
 
   const slug = namaBaru.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  const supabaseServer = buatClientServer();
+  const sbServer = buatClientServer();
+  if (id) await sbServer.from("kategori").update({ nama: namaBaru, slug }).eq("id", Number(id));
+  else if (oldKat) await sbServer.from("kategori").update({ nama: namaBaru, slug }).eq("nama", oldKat);
 
-  if (id) {
-    await supabaseServer.from("kategori").update({ nama: namaBaru, slug }).eq("id", Number(id));
-  } else if (oldKat) {
-    await supabaseServer.from("kategori").update({ nama: namaBaru, slug }).eq("nama", oldKat);
-  }
+  const conf = await ambilPengaturanAdmin();
+  const list = (conf.kategoriList || []).map((k) => (k === oldKat ? namaBaru : k));
+  await simpanPengaturanAdmin({ ...conf, kategoriList: list });
 
-  if (oldKat) {
-    try {
-      await supabaseServer.from("produk").update({ kategori: namaBaru }).eq("kategori", oldKat);
-    } catch {}
-  }
-
-  const pengaturan = await ambilPengaturanAdmin();
-  const kategoriList = (pengaturan.kategoriList || []).map((k) => (k === oldKat ? namaBaru : k));
-  await simpanPengaturanAdmin({ ...pengaturan, kategoriList });
-
-  await catatLogAktivitas("Ubah Kategori", `Mengubah kategori "${oldKat || id}" menjadi "${namaBaru}"`);
+  await catatLogAktivitas("Ubah Kategori", `Mengubah "${oldKat || id}" menjadi "${namaBaru}"`);
   revalidatePath("/admin/kategori");
   revalidatePath("/admin");
   revalidatePath("/");
-  return { sukses: "Kategori berhasil diperbarui." };
+  return { sukses: "Kategori diperbarui." };
 }
 
 export async function hapusKategoriAdmin(formData) {
-  const supabase = await buatClientSesi();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect("/admin/login");
-  }
+  const sbSesi = await buatClientSesi();
+  const { data: { user } } = await sbSesi.auth.getUser();
+  if (!user) redirect("/admin/login");
 
   const nama = formData.get("nama");
   const id = formData.get("id");
   if (!nama && !id) return;
 
-  const supabaseServer = buatClientServer();
-
-  // Cegah hapus jika kategori masih dipakai produk (US-31)
+  const sbServer = buatClientServer();
   const queryCek = id
-    ? supabaseServer.from("produk").select("id", { count: "exact", head: true }).eq("kategori_id", Number(id))
-    : supabaseServer.from("produk").select("id", { count: "exact", head: true }).eq("kategori", nama);
+    ? sbServer.from("produk").select("id", { count: "exact", head: true }).eq("kategori_id", Number(id))
+    : sbServer.from("produk").select("id", { count: "exact", head: true }).eq("kategori", nama);
 
   const { count } = await queryCek;
   if (count && count > 0) {
-    return { error: `Kategori "${nama}" tidak dapat dihapus karena sedang digunakan oleh ${count} produk.` };
+    return { error: `Kategori sedang digunakan oleh ${count} produk.` };
   }
 
-  if (id) {
-    await supabaseServer.from("kategori").delete().eq("id", Number(id));
-  } else {
-    await supabaseServer.from("kategori").delete().eq("nama", nama);
-  }
+  if (id) await sbServer.from("kategori").delete().eq("id", Number(id));
+  else await sbServer.from("kategori").delete().eq("nama", nama);
 
-  const pengaturan = await ambilPengaturanAdmin();
-  const kategoriList = (pengaturan.kategoriList || []).filter((k) => k !== nama);
-  await simpanPengaturanAdmin({ ...pengaturan, kategoriList });
+  const conf = await ambilPengaturanAdmin();
+  const list = (conf.kategoriList || []).filter((k) => k !== nama);
+  await simpanPengaturanAdmin({ ...conf, kategoriList: list });
 
-  await catatLogAktivitas("Hapus Kategori", `Menghapus kategori "${nama}"`);
+  await catatLogAktivitas("Hapus Kategori", `Menghapus "${nama}"`);
   revalidatePath("/admin/kategori");
   revalidatePath("/admin");
   revalidatePath("/");

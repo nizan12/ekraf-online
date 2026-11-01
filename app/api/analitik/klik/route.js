@@ -11,7 +11,7 @@ export async function POST(request) {
       const pid = Number(produkId);
       const supabase = buatClientServer();
 
-      // US-40: Simpan data klik pemesanan ke tabel database klik_whatsapp (produk_id, nama, harga, jumlah, waktu created_at)
+      // US-40: Simpan data klik ke tabel database klik_whatsapp
       await supabase.from("klik_whatsapp").insert({
         produk_id: isNaN(pid) ? null : pid,
         nama_produk: String(nama || "Produk").slice(0, 100),
@@ -21,7 +21,6 @@ export async function POST(request) {
         created_at: new Date().toISOString(),
       });
 
-      // Cadangan penyimpanan internal
       await catatKlikProduk({
         produkId,
         nama: nama || "Produk",
@@ -31,7 +30,7 @@ export async function POST(request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (err) {
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ ok: false, error: "Gagal mencatat analitik klik." }, { status: 500 });
   }
 }
