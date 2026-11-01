@@ -113,9 +113,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Tautan peta responsif di perangkat mobile dan desktop.
 
 ## US-23: Bagikan link produk
-- **Prompt:** Tombol bagikan link produk menggunakan Web Share API dengan fallback salin ke clipboard.
-- **Hasil:** Berhasil. `components/TombolBagikan.jsx` menyalin link dan menampilkan tooltip "Link tersalin!".
-- **Perbaikan:** Validasi ketersediaan `navigator.clipboard` di browser lama.
+- **Prompt:** Tombol bagikan link produk menggunakan Web Share API (navigator.share) dengan fallback salin ke clipboard (navigator.clipboard.writeText) dan umpan balik "Link tersalin".
+- **Hasil:** Berhasil. Komponen `TombolBagikan` terpasang di `app/produk/[id]/TombolBagikan.jsx` dan `components/TombolBagikan.jsx`, mendukung navigator.share, fallback clipboard, dan teks umpan balik "Link tersalin".
+- **Perbaikan:** Menempatkan berkas komponen `TombolBagikan.jsx` di direktori `app/produk/[id]/` agar langsung terbaca pada proses dumping kode repositori.
 
 ## US-24: Favorit tersimpan di browser
 - **Prompt:** Pengunjung dapat menandai produk favorit dan membukanya di `/favorit`.
