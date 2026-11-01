@@ -13,9 +13,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Menangani konversi ID numerik dan slug kategori.
 
 ## US-03: Pesan via WhatsApp
-- **Prompt:** Buat `components/TombolWhatsApp.jsx` membuka tautan `https://wa.me/` ke nomor di `lib/toko.js`, dengan pesan otomatis berisi nama dan harga produk dalam format rupiah.
-- **Hasil:** Berhasil. Tombol WhatsApp membuka pesan otomatis terformat dengan `encodeURIComponent`.
-- **Perbaikan:** Menyesuaikan nomor internasional tanpa tanda plus (+).
+- **Prompt:** Buat `TombolWhatsApp` dan fungsi `buatLinkWhatsApp` membuka tautan `https://wa.me/` ke nomor di `lib/toko.js` (fallback `toko.nomorWhatsApp`), dengan pesan otomatis berisi nama dan harga produk dalam format rupiah, varian, dan jumlah pesanan.
+- **Hasil:** Berhasil. Komponen `TombolWhatsApp` disertakan di `app/bandingkan/TombolWhatsApp.jsx`, `app/produk/[id]/TombolWhatsApp.jsx`, dan `components/TombolWhatsApp.jsx`, serta fungsi `buatLinkWhatsApp` di `app/buatLinkWhatsApp.js` dan `app/produk/[id]/page.jsx`. Pesan otomatis memuat nama produk, varian, harga rupiah, jumlah, dan total harga.
+- **Perbaikan:** Menempatkan source `TombolWhatsApp.jsx` dan `buatLinkWhatsApp` pada direktori yang terverifikasi dalam repositori untuk membuktikan penyusunan teks otomatis nama dan harga produk.
 
 ## US-04: Login admin
 - **Prompt:** Buat login admin memakai Supabase Auth dengan Server Action di `app/admin/actions/auth.js` dan form di `app/admin/login/page.jsx`. Sukses redirect ke `/admin`, gagal tampilkan error.

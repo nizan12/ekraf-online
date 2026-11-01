@@ -5,12 +5,10 @@ import { buatDeskripsiAI } from "@/app/admin/actions";
 
 /**
  * FormProduk - Form terpadu Tambah & Ubah Produk Admin
- * Memenuhi kriteria:
- * - US-34: Validasi form admin di server, tampilan error per field di bawah input, dan pelestarian nilai form saat error.
- * - US-14: Pembuatan deskripsi produk otomatis dengan Google Gemini AI.
- * - US-12 & US-48: Manajemen varian ukuran / rasa.
- * - US-20: Badge Baru, Terlaris, dan harga coret diskon.
- * - US-29: Unggah file foto produk langsung ke Supabase Storage.
+ * US-34: Validasi form di server, fieldErrors per input, pelestarian nilai input form
+ * US-14: Deskripsi otomatis AI
+ * US-12 & US-48: Varian produk
+ * US-20: Badge Baru / Terlaris & diskon
  */
 export default function FormProduk({
   produk = {},
@@ -59,25 +57,15 @@ export default function FormProduk({
 
   // US-14: Deskripsi AI
   async function handleBuatDeskripsiAI() {
-    if (!nama.trim()) {
-      setPesanAI({ error: "Isi nama menu terlebih dahulu." });
-      return;
-    }
+    if (!nama.trim()) { setPesanAI({ error: "Isi nama menu terlebih dahulu." }); return; }
     setLoadingAI(true);
     setPesanAI(null);
     try {
       const h = await buatDeskripsiAI({ nama, kategori });
-      if (h?.error) {
-        setPesanAI({ error: h.error });
-      } else if (h?.deskripsi) {
-        setDeskripsi(h.deskripsi);
-        setPesanAI({ sukses: "Deskripsi berhasil dibuat AI!" });
-      }
-    } catch {
-      setPesanAI({ error: "Gagal membuat deskripsi." });
-    } finally {
-      setLoadingAI(false);
-    }
+      if (h?.error) setPesanAI({ error: h.error });
+      else if (h?.deskripsi) { setDeskripsi(h.deskripsi); setPesanAI({ sukses: "Deskripsi berhasil dibuat AI!" }); }
+    } catch { setPesanAI({ error: "Gagal membuat deskripsi." }); }
+    finally { setLoadingAI(false); }
   }
 
   return (
@@ -87,25 +75,16 @@ export default function FormProduk({
       <input type="hidden" name="varian_json" value={JSON.stringify(daftarVarian)} />
 
       <div className="rounded-2xl border border-garis bg-permukaan p-4 flex flex-col gap-3">
-        {/* US-34: Input Nama dan tampilan error per field di bawah input */}
+        {/* US-34: Input Nama dan error per field */}
         <div>
           <label className="block text-xs font-semibold text-teks-lembut mb-1">
             Nama Menu / Produk <span className="text-red-500">*</span>
           </label>
           <input
-            type="text"
-            name="nama"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            required
+            type="text" name="nama" value={nama} onChange={(e) => setNama(e.target.value)} required
             placeholder="Contoh: Es Kopi Susu Aren"
-            className={`w-full rounded-xl border bg-latar px-3 py-2 text-xs text-teks transition ${
-              (state?.fieldErrors?.nama || state?.errors?.nama)
-                ? "border-red-500 focus:ring-1 focus:ring-red-500"
-                : "border-garis focus:border-utama"
-            }`}
+            className={`w-full rounded-xl border bg-latar px-3 py-2 text-xs text-teks transition ${(state?.fieldErrors?.nama || state?.errors?.nama) ? "border-red-500 focus:ring-1 focus:ring-red-500" : "border-garis focus:border-utama"}`}
           />
-          {/* Tampilan error per field di bawah input nama */}
           {(state?.fieldErrors?.nama || state?.errors?.nama) && (
             <p className="text-[11px] text-red-500 mt-1 font-medium" id="error-nama" role="alert">
               {state.fieldErrors?.nama || state.errors?.nama}
@@ -116,17 +95,11 @@ export default function FormProduk({
         <div>
           <label className="block text-xs font-semibold text-teks-lembut mb-1">Kategori</label>
           <select
-            name="kategori"
-            value={kategori}
-            onChange={(e) => setKategori(e.target.value)}
+            name="kategori" value={kategori} onChange={(e) => setKategori(e.target.value)}
             className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
           >
             <option value="">Pilih Kategori…</option>
-            {kategoriList.map((k) => (
-              <option key={k.id || k.nama} value={k.nama}>
-                {k.nama}
-              </option>
-            ))}
+            {kategoriList.map((k) => <option key={k.id || k.nama} value={k.nama}>{k.nama}</option>)}
           </select>
           {(state?.fieldErrors?.kategori || state?.errors?.kategori) && (
             <p className="text-[11px] text-red-500 mt-1 font-medium" id="error-kategori" role="alert">
@@ -136,25 +109,16 @@ export default function FormProduk({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          {/* US-34: Input Harga dan tampilan error per field di bawah input */}
+          {/* US-34: Input Harga dan error per field */}
           <div>
             <label className="block text-xs font-semibold text-teks-lembut mb-1">
               Harga (Rp) <span className="text-red-500">*</span>
             </label>
             <input
-              type="number"
-              name="harga"
-              value={harga}
-              onChange={(e) => setHarga(e.target.value)}
-              required
+              type="number" name="harga" value={harga} onChange={(e) => setHarga(e.target.value)} required
               placeholder="25000"
-              className={`w-full rounded-xl border bg-latar px-3 py-2 text-xs text-teks transition ${
-                (state?.fieldErrors?.harga || state?.errors?.harga)
-                  ? "border-red-500 focus:ring-1 focus:ring-red-500"
-                  : "border-garis focus:border-utama"
-              }`}
+              className={`w-full rounded-xl border bg-latar px-3 py-2 text-xs text-teks transition ${(state?.fieldErrors?.harga || state?.errors?.harga) ? "border-red-500 focus:ring-1 focus:ring-red-500" : "border-garis focus:border-utama"}`}
             />
-            {/* Tampilan error per field di bawah input harga */}
             {(state?.fieldErrors?.harga || state?.errors?.harga) && (
               <p className="text-[11px] text-red-500 mt-1 font-medium" id="error-harga" role="alert">
                 {state.fieldErrors?.harga || state.errors?.harga}
@@ -164,12 +128,8 @@ export default function FormProduk({
           <div>
             <label className="block text-xs font-semibold text-teks-lembut mb-1">Harga Coret (Rp)</label>
             <input
-              type="number"
-              name="harga_coret"
-              value={hargaCoret}
-              onChange={(e) => setHargaCoret(e.target.value)}
-              placeholder="30000"
-              className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
+              type="number" name="harga_coret" value={hargaCoret} onChange={(e) => setHargaCoret(e.target.value)}
+              placeholder="30000" className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
             />
           </div>
         </div>
@@ -178,23 +138,15 @@ export default function FormProduk({
           <div>
             <label className="block text-xs font-semibold text-teks-lembut mb-1">Stok</label>
             <input
-              type="number"
-              name="stok"
-              value={stok}
-              onChange={(e) => setStok(e.target.value)}
-              placeholder="10"
-              className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
+              type="number" name="stok" value={stok} onChange={(e) => setStok(e.target.value)}
+              placeholder="10" className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-teks-lembut mb-1">Diskon (%)</label>
             <input
-              type="number"
-              name="diskon_persen"
-              value={diskonPersen}
-              onChange={(e) => setDiskonPersen(e.target.value)}
-              placeholder="15"
-              className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
+              type="number" name="diskon_persen" value={diskonPersen} onChange={(e) => setDiskonPersen(e.target.value)}
+              placeholder="15" className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
             />
           </div>
         </div>
@@ -216,8 +168,7 @@ export default function FormProduk({
           <div className="flex justify-between items-center mb-1.5">
             <span className="text-xs font-bold text-teks">Varian Ukuran / Rasa</span>
             <button
-              type="button"
-              onClick={() => setDaftarVarian([...daftarVarian, { nama: "", harga_tambahan: 0 }])}
+              type="button" onClick={() => setDaftarVarian([...daftarVarian, { nama: "", harga_tambahan: 0 }])}
               className="text-xs text-utama hover:underline cursor-pointer"
             >
               + Tambah
@@ -226,30 +177,17 @@ export default function FormProduk({
           {daftarVarian.map((v, i) => (
             <div key={i} className="flex gap-1.5 mb-1.5">
               <input
-                type="text"
-                placeholder="Nama varian"
-                value={v.nama}
-                onChange={(e) => {
-                  const c = [...daftarVarian];
-                  c[i].nama = e.target.value;
-                  setDaftarVarian(c);
-                }}
+                type="text" placeholder="Nama varian" value={v.nama}
+                onChange={(e) => { const c = [...daftarVarian]; c[i].nama = e.target.value; setDaftarVarian(c); }}
                 className="flex-1 rounded border border-garis bg-latar px-2 py-1 text-xs text-teks"
               />
               <input
-                type="number"
-                placeholder="+Harga"
-                value={v.harga_tambahan}
-                onChange={(e) => {
-                  const c = [...daftarVarian];
-                  c[i].harga_tambahan = Number(e.target.value);
-                  setDaftarVarian(c);
-                }}
+                type="number" placeholder="+Harga" value={v.harga_tambahan}
+                onChange={(e) => { const c = [...daftarVarian]; c[i].harga_tambahan = Number(e.target.value); setDaftarVarian(c); }}
                 className="w-20 rounded border border-garis bg-latar px-2 py-1 text-xs text-teks"
               />
               <button
-                type="button"
-                onClick={() => setDaftarVarian(daftarVarian.filter((_, idx) => idx !== i))}
+                type="button" onClick={() => setDaftarVarian(daftarVarian.filter((_, idx) => idx !== i))}
                 className="text-red-500 text-xs px-1 cursor-pointer"
               >
                 ✕
@@ -265,9 +203,7 @@ export default function FormProduk({
             URL Foto (pisahkan koma untuk galeri)
           </label>
           <input
-            type="text"
-            value={fotoUrl}
-            onChange={(e) => setFotoUrl(e.target.value)}
+            type="text" value={fotoUrl} onChange={(e) => setFotoUrl(e.target.value)}
             placeholder="https://...foto1.jpg, https://...foto2.jpg"
             className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks"
           />
@@ -278,9 +214,7 @@ export default function FormProduk({
             Unggah File (Supabase Storage)
           </label>
           <input
-            type="file"
-            name="file_gambar"
-            accept="image/jpeg,image/png,image/webp,image/gif"
+            type="file" name="file_gambar" accept="image/jpeg,image/png,image/webp,image/gif"
             className="w-full rounded-xl border border-garis bg-latar px-3 py-1.5 text-xs text-teks file:mr-2 file:border-0 file:bg-utama/10 file:px-2.5 file:py-0.5 file:text-xs file:font-bold file:text-utama"
           />
         </div>
@@ -289,9 +223,7 @@ export default function FormProduk({
           <div className="flex justify-between items-center mb-1">
             <label className="text-xs font-semibold text-teks-lembut">Deskripsi Produk</label>
             <button
-              type="button"
-              onClick={handleBuatDeskripsiAI}
-              disabled={loadingAI}
+              type="button" onClick={handleBuatDeskripsiAI} disabled={loadingAI}
               className="text-xs text-utama hover:underline cursor-pointer"
             >
               {loadingAI ? "Menulis…" : "✨ Buat AI"}
@@ -300,18 +232,10 @@ export default function FormProduk({
           {pesanAI?.sukses && <p className="text-[11px] text-emerald-600 mb-1">{pesanAI.sukses}</p>}
           {pesanAI?.error && <p className="text-[11px] text-red-500 mb-1">{pesanAI.error}</p>}
           <textarea
-            name="deskripsi"
-            rows={4}
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
+            name="deskripsi" rows={4} value={deskripsi} onChange={(e) => setDeskripsi(e.target.value)}
             placeholder="Deskripsi menu…"
-            className={`w-full rounded-xl border bg-latar px-3 py-2 text-xs text-teks transition ${
-              (state?.fieldErrors?.deskripsi || state?.errors?.deskripsi)
-                ? "border-red-500 focus:ring-1 focus:ring-red-500"
-                : "border-garis focus:border-utama"
-            }`}
+            className={`w-full rounded-xl border bg-latar px-3 py-2 text-xs text-teks transition ${(state?.fieldErrors?.deskripsi || state?.errors?.deskripsi) ? "border-red-500 focus:ring-1 focus:ring-red-500" : "border-garis focus:border-utama"}`}
           />
-          {/* Tampilan error per field di bawah textarea deskripsi */}
           {(state?.fieldErrors?.deskripsi || state?.errors?.deskripsi) && (
             <p className="text-[11px] text-red-500 mt-1 font-medium" id="error-deskripsi" role="alert">
               {state.fieldErrors?.deskripsi || state.errors?.deskripsi}
@@ -327,8 +251,7 @@ export default function FormProduk({
         )}
 
         <button
-          type="submit"
-          disabled={pending}
+          type="submit" disabled={pending}
           className="w-full rounded-xl bg-utama py-2.5 text-xs font-bold text-white hover:bg-utama-gelap disabled:opacity-40 cursor-pointer shadow-sm transition"
         >
           {pending ? "Menyimpan…" : labelTombol}

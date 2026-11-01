@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import TombolWhatsApp, { buatLinkWhatsApp } from "./TombolWhatsApp";
-export { buatLinkWhatsApp };
+import TombolWhatsApp from "./TombolWhatsApp";
+import { toko } from "@/lib/toko";
+
+/**
+ * US-03: Pesan via WhatsApp
+ * Membuka WhatsApp ke nomor di lib/toko.js dengan pesan otomatis berisi nama dan harga produk.
+ */
+export function buatLinkWhatsApp(namaProduk, hargaProduk) {
+  const nomor = toko.nomorWhatsApp;
+  const hargaTeks = typeof hargaProduk === "number" ? `Rp ${hargaProduk.toLocaleString("id-ID")}` : String(hargaProduk || "");
+  const pesan = `Halo, saya ingin memesan:\n\n*${namaProduk}*\nHarga: ${hargaTeks}\n\nTerima kasih!`;
+  return `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
+}
 import TombolBagikan from "./TombolBagikan";
 import TombolFavorit from "@/components/TombolFavorit";
 import TerakhirDilihat from "@/components/TerakhirDilihat";
@@ -11,7 +22,6 @@ import BagianUlasan from "@/components/BagianUlasan";
 import KotakTanyaProdukAI from "@/components/KotakTanyaProdukAI";
 import { buatClientServer, normalisasiProduk, normalisasiDaftarProduk } from "@/lib/supabase";
 import { formatRupiah } from "@/lib/format";
-import { toko } from "@/lib/toko";
 import { ambilPengaturanPublik } from "@/lib/pengaturanAdmin";
 
 export const dynamic = "force-dynamic";

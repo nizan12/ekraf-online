@@ -5,9 +5,29 @@ import { toko } from "@/lib/toko";
 import { formatRupiah } from "@/lib/format";
 import TombolKeranjang from "@/components/TombolKeranjang";
 
-// US-03, US-12, US-48: Buat link WhatsApp dengan nomor, nama toko, nama produk, varian, harga, dan jumlah
-export function buatLinkWhatsApp({ nomor, namaToko, namaProduk, harga, jumlah = 1, varian = "Regular" }) {
-  const pesan = `Halo ${namaToko || "Nuran Artisan Coffee"}, saya ingin memesan:\n\n*${namaProduk}*\nVarian: ${varian}\nHarga: ${formatRupiah(harga)}\nJumlah: ${jumlah}\nTotal: ${formatRupiah(harga * jumlah)}\n\nTerima kasih!`;
+// US-03, US-12, US-48: Buat link WhatsApp dengan nomor di lib/toko.js, pesan otomatis berisi nama dan harga produk
+export function buatLinkWhatsApp(optionsOrNama, hargaProduk) {
+  let nomor = toko.nomorWhatsApp;
+  let namaProduk = "";
+  let hargaTeks = "";
+  let pesan = "";
+
+  if (typeof optionsOrNama === "object" && optionsOrNama !== null) {
+    nomor = optionsOrNama.nomor || toko.nomorWhatsApp;
+    namaProduk = optionsOrNama.namaProduk || optionsOrNama.nama || "";
+    const hargaNum = Number(optionsOrNama.harga) || 0;
+    const jumlah = optionsOrNama.jumlah || 1;
+    const varian = optionsOrNama.varian;
+    hargaTeks = formatRupiah(hargaNum);
+    const varianTeks = varian && varian !== "Regular" ? `\nVarian: ${varian}` : "";
+    const jumlahTeks = jumlah > 1 ? `\nJumlah: ${jumlah}\nTotal: ${formatRupiah(hargaNum * jumlah)}` : "";
+    pesan = `Halo ${optionsOrNama.namaToko || toko.nama}, saya ingin memesan:\n\n*${namaProduk}*${varianTeks}\nHarga: ${hargaTeks}${jumlahTeks}\n\nTerima kasih!`;
+  } else {
+    namaProduk = String(optionsOrNama || "");
+    hargaTeks = typeof hargaProduk === "number" ? formatRupiah(hargaProduk) : String(hargaProduk || "");
+    pesan = `Halo, saya ingin memesan:\n\n*${namaProduk}*\nHarga: ${hargaTeks}\n\nTerima kasih!`;
+  }
+
   return `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
 }
 

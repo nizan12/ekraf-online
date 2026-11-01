@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buatClientServer, normalisasiProduk } from "@/lib/supabase";
 import { formatRupiah, ambilFotoUtama } from "@/lib/format";
-import TombolWhatsApp from "@/components/TombolWhatsApp";
+import TombolWhatsApp from "./TombolWhatsApp";
 
 export const dynamic = "force-dynamic";
 
