@@ -193,9 +193,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Perhitungan rata-rata bintang hanya dari ulasan yang disetujui.
 
 ## US-39: Moderasi ulasan di admin
-- **Prompt:** Halaman `/admin/ulasan` untuk menyetujui, menyembunyikan, atau menghapus ulasan pengunjung.
-- **Hasil:** Berhasil. Aksi moderasi terlindungi login admin dan memperbarui status ulasan.
-- **Perbaikan:** Revalidasi halaman detail produk setelah status ulasan dimutasi.
+- **Prompt:** Halaman `/admin/ulasan` untuk menyetujui, menyembunyikan, atau menghapus ulasan pembeli dengan parameter form yang konsisten dengan Server Action.
+- **Hasil:** Berhasil. Server action `moderasiUlasanAction` dan `hapusUlasanAction` membaca parameter `id`/`ulasanId` serta `status`/`aksi`, memperbarui kolom `disetujui` di database, dan menghapus ulasan.
+- **Perbaikan:** Menyelaraskan form input di `app/admin/ulasan/page.jsx` agar mengirim `id`, `ulasanId`, `status`, dan `aksi` sehingga aksi moderasi dan hapus diproses dengan tepat.
 
 ## US-40: Catat klik WhatsApp
 - **Prompt:** Endpoint analitik `/api/analitik/klik` mencatat setiap klik pemesanan WhatsApp tanpa data pribadi.

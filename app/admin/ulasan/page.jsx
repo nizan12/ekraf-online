@@ -1,7 +1,7 @@
 import NavAdmin from "@/components/NavAdmin";
 import Tombol from "@/components/Tombol";
 import { buatClientServer } from "@/lib/supabase";
-import { moderasiUlasanAction } from "@/app/admin/actions";
+import { moderasiUlasanAction, hapusUlasanAction } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -62,18 +62,23 @@ export default async function HalamanModerasiUlasan() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <form action={moderasiUlasanAction}>
-                        <input type="hidden" name="produkId" value={u.produkId} />
+                        <input type="hidden" name="id" value={u.id} />
                         <input type="hidden" name="ulasanId" value={u.id} />
+                        <input type="hidden" name="produkId" value={u.produkId} />
+                        <input type="hidden" name="status" value={u.disetujui ? "sembunyi" : "disetujui"} />
                         <input type="hidden" name="aksi" value={u.disetujui ? "sembunyikan" : "tampilkan"} />
                         <button type="submit" className="text-xs text-utama hover:underline cursor-pointer">
                           {u.disetujui ? "Sembunyikan" : "Tampilkan"}
                         </button>
                       </form>
-                      <form action={moderasiUlasanAction}>
-                        <input type="hidden" name="produkId" value={u.produkId} />
+                      <form action={hapusUlasanAction}>
+                        <input type="hidden" name="id" value={u.id} />
                         <input type="hidden" name="ulasanId" value={u.id} />
+                        <input type="hidden" name="produkId" value={u.produkId} />
                         <input type="hidden" name="aksi" value="hapus" />
-                        <button type="submit" className="text-xs text-red-600 hover:underline cursor-pointer">Hapus</button>
+                        <button type="submit" className="text-xs text-red-600 hover:underline cursor-pointer">
+                          Hapus
+                        </button>
                       </form>
                     </div>
                   </td>

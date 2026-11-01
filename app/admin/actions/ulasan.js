@@ -52,12 +52,31 @@ export async function moderasiUlasanAction(formData) {
   const { data: { user } } = await supabaseSesi.auth.getUser();
   if (!user) redirect("/admin/login");
 
-  const id = formData.get("id");
-  const statusBaru = formData.get("status"); // "disetujui" atau "sembunyi"
-  if (!id || !statusBaru) return;
+  const id = formData.get("id") || formData.get("ulasanId");
+  const aksi = formData.get("aksi") || formData.get("status");
+  if (!id) return;
 
-  const disetujui = statusBaru === "disetujui" || statusBaru === "true";
   const supabaseServer = buatClientServer();
+
+  // Jika aksi adalah hapus
+  if (aksi === "hapus") {
+    try {
+      await supabaseServer.from("ulasan").delete().eq("id", Number(id));
+    } catch {}
+    await hapusUlasanAdmin(String(id));
+    await catatLogAktivitas("Hapus Ulasan", `Menghapus ulasan ID #${id}`);
+    revalidatePath("/admin/ulasan");
+    revalidatePath("/");
+    return;
+  }
+
+  // Jika moderasi status tampil / sembunyi
+  const disetujui =
+    aksi === "disetujui" ||
+    aksi === "tampilkan" ||
+    aksi === "true" ||
+    aksi === true;
+
   try {
     await supabaseServer
       .from("ulasan")
@@ -82,7 +101,7 @@ export async function hapusUlasanAction(formData) {
   const { data: { user } } = await supabaseSesi.auth.getUser();
   if (!user) redirect("/admin/login");
 
-  const id = formData.get("id");
+  const id = formData.get("id") || formData.get("ulasanId");
   if (!id) return;
 
   const supabaseServer = buatClientServer();
