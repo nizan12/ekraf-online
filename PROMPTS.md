@@ -208,9 +208,9 @@ Catat prompt penting selama membangun aplikasi: apa yang kamu minta, hasilnya, d
 - **Perbaikan:** Tampilan ramah bila data klik analitik masih kosong.
 
 ## US-42: Banner promo di beranda
-- **Prompt:** Banner slider promo dinamis di halaman utama yang dapat dikelola dari admin `/admin/banner`.
-- **Hasil:** Berhasil. Admin dapat CRUD banner promo dan menampilkannya di hero section beranda.
-- **Perbaikan:** Filter banner dengan status `aktif: true` di sisi server.
+- **Prompt:** Banner slider promo di beranda dengan pengelolaan lengkap di admin `/admin/banner`: tambah, toggle status aktif, hapus, dan form ubah judul, teks/deskripsi, gambar, dan tautan.
+- **Hasil:** Berhasil. Halaman admin `/admin/banner` menyediakan form tambah dan form ubah (judul, teks, gambar, tautan) yang memanggil `ubahBannerAdmin`. Beranda merender banner aktif (`aktif: true`) dari database Supabase.
+- **Perbaikan:** Menambahkan form ubah judul, teks, gambar, dan tautan pada daftar banner di halaman admin `/admin/banner`.
 
 ## US-43: Pengaturan toko dari admin
 - **Prompt:** Halaman `/admin/pengaturan` untuk mengubah nama toko, nomor WA, alamat, dan jam buka.
