@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import TombolWhatsApp, { buatLinkWhatsApp } from "@/app/TombolWhatsApp";
+import TombolWhatsApp, { buatLinkWhatsApp } from "@/components/TombolWhatsApp";
 export { buatLinkWhatsApp };
-import TombolBagikan from "./TombolBagikan";
+import TombolBagikan from "@/components/TombolBagikan";
 import TombolFavorit from "@/components/TombolFavorit";
 import TerakhirDilihat from "@/components/TerakhirDilihat";
 import GaleriFoto from "@/components/GaleriFoto";
