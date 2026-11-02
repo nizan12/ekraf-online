@@ -19,10 +19,8 @@ export async function imporProdukCSV(prevState, formData) {
     if (lines.length <= 1) return { error: "File CSV kosong atau hanya header." };
 
     const dataBaris = lines.slice(1);
-    let totalBerhasil = 0;
-    let totalGagal = 0;
-    const barisGagal = [];
-    const rowsToInsert = [];
+    let totalBerhasil = 0, totalGagal = 0;
+    const barisGagal = [], rowsToInsert = [];
 
     dataBaris.forEach((line, index) => {
       const cols = line.split(",").map((c) => c.trim().replace(/^["']|["']$/g, ""));
@@ -41,8 +39,7 @@ export async function imporProdukCSV(prevState, formData) {
       const sbServer = buatClientServer();
       await sbServer.from("produk").insert(rowsToInsert);
       await catatLogAktivitas("Impor CSV", `Berhasil mengimpor ${totalBerhasil} produk.`);
-      revalidatePath("/admin");
-      revalidatePath("/");
+      revalidatePath("/admin"); revalidatePath("/");
     }
 
     return {

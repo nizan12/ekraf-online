@@ -8,33 +8,24 @@ export default function KotakTanyaProdukAI({ produk }) {
   const [memuat, setMemuat] = useState(false);
   const [error, setError] = useState("");
 
-  const saranTanya = [
-    `Rasa & aroma ${produk?.nama} seperti apa?`,
-    `Cocok dipasangkan dengan makanan apa?`,
-  ];
+  const saranTanya = [`Rasa & aroma ${produk?.nama} seperti apa?`, `Cocok dipasangkan dengan makanan apa?`];
 
   async function handleKirim(teksTanya) {
     const q = (teksTanya || pertanyaan).trim();
     if (!q || memuat) return;
-    setMemuat(true);
-    setError("");
-    setJawaban("");
-
+    setMemuat(true); setError(""); setJawaban("");
     try {
       const res = await fetch("/api/ai/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pesan: `Pertanyaan tentang "${produk.nama}": ${q}` }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gagal menghubungi AI.");
+      if (!res.ok) throw new Error(data.error || "Gagal");
       setJawaban((data.jawaban || "").replace(/\[REKOMENDASI:.*?\]/g, "").trim());
       setPertanyaan("");
     } catch {
       setError("Terjadi kesalahan, silakan coba lagi.");
-    } finally {
-      setMemuat(false);
-    }
+    } finally { setMemuat(false); }
   }
 
   return (
@@ -49,33 +40,15 @@ export default function KotakTanyaProdukAI({ produk }) {
 
       <div className="mt-3 flex flex-wrap gap-1.5">
         {saranTanya.map((s, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => { setPertanyaan(s); handleKirim(s); }}
-            disabled={memuat}
-            className="rounded-lg border border-garis bg-latar px-2.5 py-1 text-[11px] font-semibold text-teks hover:border-utama cursor-pointer"
-          >
+          <button key={idx} type="button" onClick={() => { setPertanyaan(s); handleKirim(s); }} disabled={memuat} className="rounded-lg border border-garis bg-latar px-2.5 py-1 text-[11px] font-semibold text-teks hover:border-utama cursor-pointer">
             &quot;{s}&quot;
           </button>
         ))}
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); handleKirim(); }} className="mt-3 flex gap-2">
-        <input
-          type="text"
-          value={pertanyaan}
-          onChange={(e) => setPertanyaan(e.target.value)}
-          maxLength={300}
-          placeholder={`Tanya seputar ${produk.nama}…`}
-          disabled={memuat}
-          className="flex-1 rounded-xl border border-garis bg-latar px-3.5 py-2 text-xs text-teks focus:border-utama focus:outline-none"
-        />
-        <button
-          type="submit"
-          disabled={memuat || !pertanyaan.trim()}
-          className="rounded-xl bg-utama px-4 py-2 text-xs font-bold text-white hover:bg-utama-gelap disabled:opacity-40 cursor-pointer"
-        >
+        <input type="text" value={pertanyaan} onChange={(e) => setPertanyaan(e.target.value)} maxLength={300} placeholder={`Tanya seputar ${produk.nama}…`} disabled={memuat} className="flex-1 rounded-xl border border-garis bg-latar px-3.5 py-2 text-xs text-teks focus:border-utama focus:outline-none" />
+        <button type="submit" disabled={memuat || !pertanyaan.trim()} className="rounded-xl bg-utama px-4 py-2 text-xs font-bold text-white hover:bg-utama-gelap disabled:opacity-40 cursor-pointer">
           {memuat ? "…" : "Tanya AI"}
         </button>
       </form>

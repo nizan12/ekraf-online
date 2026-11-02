@@ -1,19 +1,11 @@
 import Link from "next/link";
 
-export default function Paginasi({
-  halamanSekarang = 1,
-  totalHalaman = 1,
-  totalProduk = 0,
-  itemPerHalaman = 6,
-  params = {},
-}) {
+export default function Paginasi({ halamanSekarang = 1, totalHalaman = 1, totalProduk = 0, itemPerHalaman = 6, params = {} }) {
   if (totalHalaman <= 1) return null;
 
   function buatUrl(h) {
     const sp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
-      if (v && k !== "halaman") sp.set(k, v);
-    });
+    Object.entries(params).forEach(([k, v]) => { if (v && k !== "halaman") sp.set(k, v); });
     if (h > 1) sp.set("halaman", h.toString());
     const query = sp.toString();
     return query ? `/?${query}` : "/";
@@ -21,9 +13,7 @@ export default function Paginasi({
 
   const awal = (halamanSekarang - 1) * itemPerHalaman + 1;
   const akhir = Math.min(halamanSekarang * itemPerHalaman, totalProduk);
-
-  const halamanList = [];
-  for (let i = 1; i <= totalHalaman; i++) halamanList.push(i);
+  const halamanList = Array.from({ length: totalHalaman }, (_, i) => i + 1);
 
   return (
     <nav aria-label="Navigasi Halaman Produk" className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-garis pt-6">
@@ -33,37 +23,25 @@ export default function Paginasi({
 
       <div className="flex items-center gap-1.5">
         {halamanSekarang > 1 ? (
-          <Link href={buatUrl(halamanSekarang - 1)} className="rounded-lg border border-garis bg-latar px-3 py-1.5 text-xs sm:text-sm font-medium text-teks hover:border-utama">
-            ← Sebelumnya
-          </Link>
+          <Link href={buatUrl(halamanSekarang - 1)} className="rounded-lg border border-garis bg-latar px-3 py-1.5 text-xs sm:text-sm font-medium text-teks hover:border-utama">← Sebelumnya</Link>
         ) : (
-          <span className="rounded-lg border border-garis/50 bg-latar/50 px-3 py-1.5 text-xs sm:text-sm font-medium text-teks-lembut opacity-50 cursor-not-allowed">
-            ← Sebelumnya
-          </span>
+          <span className="rounded-lg border border-garis/50 bg-latar/50 px-3 py-1.5 text-xs sm:text-sm font-medium text-teks-lembut opacity-50 cursor-not-allowed">← Sebelumnya</span>
         )}
 
         <div className="flex items-center gap-1">
           {halamanList.map((no) => (
             no === halamanSekarang ? (
-              <span key={no} className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-utama text-xs sm:text-sm font-semibold text-white">
-                {no}
-              </span>
+              <span key={no} className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-utama text-xs sm:text-sm font-semibold text-white">{no}</span>
             ) : (
-              <Link key={no} href={buatUrl(no)} className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border border-garis bg-latar text-xs sm:text-sm font-medium text-teks hover:border-utama">
-                {no}
-              </Link>
+              <Link key={no} href={buatUrl(no)} className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg border border-garis bg-latar text-xs sm:text-sm font-medium text-teks hover:border-utama">{no}</Link>
             )
           ))}
         </div>
 
         {halamanSekarang < totalHalaman ? (
-          <Link href={buatUrl(halamanSekarang + 1)} className="rounded-lg border border-garis bg-latar px-3 py-1.5 text-xs sm:text-sm font-medium text-teks hover:border-utama">
-            Selanjutnya →
-          </Link>
+          <Link href={buatUrl(halamanSekarang + 1)} className="rounded-lg border border-garis bg-latar px-3 py-1.5 text-xs sm:text-sm font-medium text-teks hover:border-utama">Selanjutnya →</Link>
         ) : (
-          <span className="rounded-lg border border-garis/50 bg-latar/50 px-3 py-1.5 text-xs sm:text-sm font-medium text-teks-lembut opacity-50 cursor-not-allowed">
-            Selanjutnya →
-          </span>
+          <span className="rounded-lg border border-garis/50 bg-latar/50 px-3 py-1.5 text-xs sm:text-sm font-medium text-teks-lembut opacity-50 cursor-not-allowed">Selanjutnya →</span>
         )}
       </div>
     </nav>

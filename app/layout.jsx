@@ -8,58 +8,23 @@ import { toko as defaultToko } from "@/lib/toko";
 
 export const metadata = {
   metadataBase: new URL(process.env.SITE_URL || "https://nuran-coffee.vercel.app"),
-  title: {
-    default: `${defaultToko.nama} - Katalog & Pesan Kopi`,
-    template: `%s | ${defaultToko.nama}`,
-  },
+  title: { default: `${defaultToko.nama} - Katalog & Pesan Kopi`, template: `%s | ${defaultToko.nama}` },
   description: defaultToko.tagline,
-  openGraph: {
-    title: `${defaultToko.nama} - Katalog & Pesan Kopi`,
-    description: defaultToko.tagline,
-    siteName: defaultToko.nama,
-    locale: "id_ID",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: defaultToko.nama,
-    description: defaultToko.tagline,
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: defaultToko.nama,
-  },
-  icons: {
-    icon: "/icons/icon-192.svg",
-    apple: "/icons/icon-192.png",
-  },
+  openGraph: { title: `${defaultToko.nama} - Katalog & Pesan Kopi`, description: defaultToko.tagline, siteName: defaultToko.nama, locale: "id_ID", type: "website" },
+  twitter: { card: "summary_large_image", title: defaultToko.nama, description: defaultToko.tagline },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: defaultToko.nama },
+  icons: { icon: "/icons/icon-192.svg", apple: "/icons/icon-192.png" },
 };
 
-export const viewport = {
-  themeColor: "#1f6b4f",
-};
+export const viewport = { themeColor: "#1f6b4f" };
 
 export default async function RootLayout({ children }) {
   let toko = defaultToko;
-
   try {
-    const supabase = buatClientServer();
-    const { data: dbToko } = await supabase
-      .from("pengaturan_toko")
-      .select("*")
-      .limit(1)
-      .maybeSingle();
-
-    if (dbToko) {
-      toko = {
-        nama: dbToko.nama || defaultToko.nama,
-        nomorWhatsApp: dbToko.nomor_whatsapp || defaultToko.nomorWhatsApp,
-        alamat: dbToko.alamat || defaultToko.alamat,
-        jamBuka: dbToko.jam_buka || defaultToko.jamBuka,
-        tagline: dbToko.tagline || defaultToko.tagline || "",
-        deskripsi: dbToko.deskripsi || defaultToko.deskripsi || "",
-      };
+    const sb = buatClientServer();
+    const { data: db } = await sb.from("pengaturan_toko").select("*").limit(1).maybeSingle();
+    if (db) {
+      toko = { nama: db.nama || defaultToko.nama, nomorWhatsApp: db.nomor_whatsapp || defaultToko.nomorWhatsApp, alamat: db.alamat || defaultToko.alamat, jamBuka: db.jam_buka || defaultToko.jamBuka, tagline: db.tagline || defaultToko.tagline || "", deskripsi: db.deskripsi || "" };
     }
   } catch {}
 
@@ -68,10 +33,7 @@ export default async function RootLayout({ children }) {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
-        />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <script src="/theme-init.js"></script>
       </head>

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { buatClientServer, normalisasiProduk } from "@/lib/supabase";
 import { formatRupiah, ambilFotoUtama } from "@/lib/format";
 import TombolWhatsApp from "./TombolWhatsApp";
@@ -11,139 +10,103 @@ export const metadata = {
   description: "Bandingkan 2 pilihan menu kopi atau camilan sebelum memesan.",
 };
 
+const tdLbl = "px-3 py-2 font-semibold text-teks-lembut";
+const selCls = "w-full rounded-lg border border-garis bg-latar px-2.5 py-1.5 text-xs text-teks";
+
 export default async function HalamanBandingkan({ searchParams }) {
   const sp = (await searchParams) || {};
   let rawIds = [];
-
-  if (sp.ids) {
-    rawIds = sp.ids.split(",").map((s) => s.trim()).filter(Boolean);
-  } else {
+  if (sp.ids) rawIds = sp.ids.split(",").map((s) => s.trim()).filter(Boolean);
+  else {
     if (sp.id1) rawIds.push(String(sp.id1).trim());
     if (sp.id2) rawIds.push(String(sp.id2).trim());
   }
 
-  // US-37: Pesan bila >2 dan slice 2
   const melebihiBatas = rawIds.length > 2;
-  const pesanBatas = melebihiBatas
-    ? `Perhatian: Perbandingan dibatasi maksimal 2 produk. Anda memilih ${rawIds.length} produk, menampilkan 2 produk pertama.`
-    : null;
+  const targetIds = rawIds.slice(0, 2);
 
-  const ids = rawIds.slice(0, 2);
-  const supabase = buatClientServer();
-  let produkBandingkan = [];
+  const sb = buatClientServer();
+  const { data: allProdukRaw } = await sb.from("produk").select("id, nama, harga").eq("aktif", true).order("nama");
+  const allProduk = allProdukRaw || [];
 
-  const { data: semuaData } = await supabase
-    .from("produk")
-    .select("id, nama, harga, kategori")
-    .order("nama", { ascending: true });
-  const semuaProduk = semuaData || [];
-
-  if (ids.length > 0) {
-    const { data, error } = await supabase
-      .from("produk")
-      .select("*, kategori_rel:kategori_id(id, nama, slug)")
-      .in("id", ids);
-
-    // US-37: notFound bila produk tidak ada
-    if (error || !data || data.length === 0) {
-      notFound();
-    }
-    produkBandingkan = data.map(normalisasiProduk);
+  let produkBanding = [];
+  if (targetIds.length > 0) {
+    const { data: produkRaw } = await sb.from("produk").select("*, kategori_rel:kategori_id(id, nama)").in("id", targetIds).eq("aktif", true);
+    produkBanding = (produkRaw || []).map(normalisasiProduk);
   }
 
   return (
     <div className="py-8 max-w-4xl mx-auto flex flex-col gap-6">
-      <div>
-        <Link href="/" className="text-xs text-teks-lembut hover:text-utama">← Kembali ke katalog</Link>
-        <h1 className="text-2xl font-extrabold text-teks mt-1">Bandingkan 2 Menu</h1>
-        <p className="text-xs text-teks-lembut mt-0.5">Pilih 2 produk untuk melihat perbandingan rasa, harga, dan porsi.</p>
+      <div className="flex flex-col gap-1">
+        <Link href="/" className="text-xs text-teks-lembut underline hover:text-utama">← Kembali ke Katalog</Link>
+        <h1 className="text-2xl font-extrabold text-teks">Bandingkan Produk</h1>
+        <p className="text-xs text-teks-lembut">Pilih 2 produk untuk melihat perbandingan berdampingan.</p>
       </div>
 
-      {pesanBatas && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800">
-          {pesanBatas}
+      {melebihiBatas && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-800">
+          Maksimal 2 produk yang dapat dibandingkan sekaligus.
         </div>
       )}
 
-      {/* Pemilih 2 Produk (US-37) */}
-      <form method="GET" action="/bandingkan" className="rounded-2xl border border-garis bg-permukaan p-4 flex flex-wrap gap-3 items-end">
-        <div className="flex-1 min-w-[180px]">
-          <label className="block text-xs font-semibold text-teks-lembut mb-1">Produk 1</label>
-          <select name="id1" defaultValue={ids[0] || ""} className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks">
-            <option value="">Pilih menu pertama…</option>
-            {semuaProduk.map((p) => (
-              <option key={p.id} value={p.id}>{p.nama} ({formatRupiah(p.harga)})</option>
-            ))}
+      <form method="GET" className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-2xl border border-garis bg-permukaan text-xs">
+        <div>
+          <label className="block text-[11px] font-semibold text-teks-lembut mb-0.5">Produk 1:</label>
+          <select name="id1" defaultValue={targetIds[0] || ""} className={selCls}>
+            <option value="">Pilih Produk Pertama…</option>
+            {allProduk.map((p) => <option key={p.id} value={p.id}>{p.nama} ({formatRupiah(p.harga)})</option>)}
           </select>
         </div>
-        <div className="flex-1 min-w-[180px]">
-          <label className="block text-xs font-semibold text-teks-lembut mb-1">Produk 2</label>
-          <select name="id2" defaultValue={ids[1] || ""} className="w-full rounded-xl border border-garis bg-latar px-3 py-2 text-xs text-teks">
-            <option value="">Pilih menu kedua…</option>
-            {semuaProduk.map((p) => (
-              <option key={p.id} value={p.id}>{p.nama} ({formatRupiah(p.harga)})</option>
-            ))}
+        <div>
+          <label className="block text-[11px] font-semibold text-teks-lembut mb-0.5">Produk 2:</label>
+          <select name="id2" defaultValue={targetIds[1] || ""} className={selCls}>
+            <option value="">Pilih Produk Kedua…</option>
+            {allProduk.map((p) => <option key={p.id} value={p.id}>{p.nama} ({formatRupiah(p.harga)})</option>)}
           </select>
         </div>
-        <button type="submit" className="rounded-xl bg-utama px-4 py-2 text-xs font-bold text-white hover:bg-utama-gelap cursor-pointer">
-          Bandingkan
-        </button>
+        <div className="sm:col-span-2 flex justify-end">
+          <button type="submit" className="rounded-lg bg-utama px-3.5 py-1.5 text-xs font-bold text-white hover:bg-utama-gelap cursor-pointer">Bandingkan Sekarang</button>
+        </div>
       </form>
 
-      {/* Tabel Komparasi Berdampingan (US-37: foto, kategori, harga, deskripsi) */}
-      {produkBandingkan.length > 0 ? (
-        <div className="overflow-x-auto rounded-2xl border border-garis bg-latar">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-permukaan border-b border-garis text-xs text-teks-lembut">
+      {produkBanding.length > 0 ? (
+        <div className="overflow-x-auto rounded-2xl border border-garis bg-permukaan">
+          <table className="w-full text-left text-xs">
+            <thead className="border-b border-garis bg-latar">
               <tr>
-                <th className="px-4 py-3 w-1/4">Kriteria</th>
-                {produkBandingkan.map((p) => (
-                  <th key={p.id} className="px-4 py-3 font-bold text-teks w-3/8">{p.nama}</th>
+                <th className="px-3 py-2.5 font-semibold text-teks-lembut w-1/4">Spesifikasi</th>
+                {produkBanding.map((p) => (
+                  <th key={p.id} className="px-3 py-2.5 font-bold text-teks w-3/8">
+                    <div className="flex flex-col gap-1.5 items-center text-center">
+                      <img src={ambilFotoUtama(p)} alt={p.nama} className="h-20 w-20 rounded-xl object-cover bg-permukaan" />
+                      <span className="font-bold text-xs">{p.nama}</span>
+                    </div>
+                  </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-garis text-xs">
+            <tbody className="divide-y divide-garis">
               <tr>
-                <td className="px-4 py-3 font-semibold text-teks-lembut">Foto</td>
-                {produkBandingkan.map((p) => (
-                  <td key={p.id} className="px-4 py-3">
-                    <img src={ambilFotoUtama(p)} alt={p.nama} className="h-24 w-24 rounded-xl object-cover bg-permukaan" />
-                  </td>
-                ))}
+                <td className={tdLbl}>Harga</td>
+                {produkBanding.map((p) => <td key={p.id} className="px-3 py-2 font-bold text-utama text-xs">{formatRupiah(p.harga)}</td>)}
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-teks-lembut">Kategori</td>
-                {produkBandingkan.map((p) => (
-                  <td key={p.id} className="px-4 py-3 text-teks font-medium">{p.kategori || "—"}</td>
-                ))}
+                <td className={tdLbl}>Kategori</td>
+                {produkBanding.map((p) => <td key={p.id} className="px-3 py-2 text-teks">{p.kategori || "—"}</td>)}
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-teks-lembut">Harga</td>
-                {produkBandingkan.map((p) => (
-                  <td key={p.id} className="px-4 py-3 font-bold text-utama text-sm">{formatRupiah(p.harga)}</td>
-                ))}
+                <td className={tdLbl}>Deskripsi</td>
+                {produkBanding.map((p) => <td key={p.id} className="px-3 py-2 text-teks-lembut leading-relaxed">{p.deskripsi || "—"}</td>)}
               </tr>
               <tr>
-                <td className="px-4 py-3 font-semibold text-teks-lembut">Deskripsi</td>
-                {produkBandingkan.map((p) => (
-                  <td key={p.id} className="px-4 py-3 text-teks-lembut leading-relaxed">{p.deskripsi || "—"}</td>
-                ))}
-              </tr>
-              <tr>
-                <td className="px-4 py-3 font-semibold text-teks-lembut">Pesan</td>
-                {produkBandingkan.map((p) => (
-                  <td key={p.id} className="px-4 py-3">
-                    <TombolWhatsApp produk={p} />
-                  </td>
-                ))}
+                <td className={tdLbl}>Pesan</td>
+                {produkBanding.map((p) => <td key={p.id} className="px-3 py-2"><TombolWhatsApp produk={p} /></td>)}
               </tr>
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="rounded-2xl border border-garis bg-permukaan p-8 text-center text-xs text-teks-lembut">
-          Pilih 2 produk pada form di atas untuk memulai perbandingan.
-        </div>
+        <div className="rounded-2xl border border-garis bg-permukaan p-6 text-center text-xs text-teks-lembut">Pilih 2 produk di atas untuk melihat perbandingan.</div>
       )}
     </div>
   );

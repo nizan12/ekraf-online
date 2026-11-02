@@ -8,27 +8,14 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Log Aktivitas Admin - Admin" };
 
 export default async function HalamanLogAktivitas() {
-  const supabase = buatClientServer();
+  const sb = buatClientServer();
   let logs = [];
-
   try {
-    const { data } = await supabase
-      .from("log_aktivitas")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
-
-    if (data && data.length > 0) {
-      logs = data.map((l) => ({
-        id: String(l.id),
-        timestamp: l.created_at,
-        user: l.admin_email || "Admin",
-        aksi: l.aksi,
-        rincian: l.rincian || "",
-      }));
+    const { data } = await sb.from("log_aktivitas").select("*").order("created_at", { ascending: false }).limit(50);
+    if (data?.length > 0) {
+      logs = data.map((l) => ({ id: String(l.id), timestamp: l.created_at, user: l.admin_email || "Admin", aksi: l.aksi, rincian: l.rincian || "" }));
     }
   } catch {}
-
   if (logs.length === 0) {
     const config = await ambilPengaturanAdmin();
     if (Array.isArray(config.auditLog)) logs = config.auditLog.slice(0, 50);
@@ -40,45 +27,31 @@ export default async function HalamanLogAktivitas() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-teks">Log Aktivitas Admin</h1>
-          <p className="mt-1 text-xs text-teks-lembut">
-            Rekam jejak 50 aktivitas terbaru admin.
-          </p>
+          <p className="mt-1 text-xs text-teks-lembut">Rekam jejak 50 aktivitas terbaru admin.</p>
         </div>
         {logs.length > 0 && (
           <form action={kosongkanLogAktivitas}>
-            <TombolHapusKonfirmasi
-              pesan="Bersihkan seluruh riwayat log aktivitas?"
-              label="Bersihkan Log"
-              varian="garis"
-              className="py-2 px-3.5 text-xs text-red-600"
-            />
+            <TombolHapusKonfirmasi pesan="Bersihkan seluruh riwayat log aktivitas?" label="Bersihkan Log" varian="garis" className="py-1.5 px-3 text-xs text-red-600" />
           </form>
         )}
       </div>
 
       <div className="rounded-2xl border border-garis bg-latar overflow-hidden">
         {logs.length === 0 ? (
-          <div className="p-10 text-center text-sm text-teks-lembut">Belum ada aktivitas tercatat.</div>
+          <div className="p-8 text-center text-xs text-teks-lembut">Belum ada catatan aktivitas.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-permukaan text-xs font-semibold text-teks-lembut border-b border-garis">
-                <tr>
-                  <th className="px-5 py-3">Waktu</th>
-                  <th className="px-5 py-3">Admin</th>
-                  <th className="px-5 py-3">Jenis Aksi</th>
-                  <th className="px-5 py-3">Rincian</th>
-                </tr>
+            <table className="w-full text-left text-xs">
+              <thead className="bg-permukaan text-teks-lembut border-b border-garis">
+                <tr><th className="px-5 py-2.5">Waktu</th><th className="px-5 py-2.5">User</th><th className="px-5 py-2.5">Aksi</th><th className="px-5 py-2.5">Rincian</th></tr>
               </thead>
               <tbody className="divide-y divide-garis">
                 {logs.map((log) => (
                   <tr key={log.id}>
-                    <td className="px-5 py-3 text-xs text-teks-lembut whitespace-nowrap">
-                      {new Date(log.timestamp).toLocaleString("id-ID")}
-                    </td>
-                    <td className="px-5 py-3 text-xs font-semibold text-teks">{log.user}</td>
-                    <td className="px-5 py-3 text-xs font-bold text-utama">{log.aksi}</td>
-                    <td className="px-5 py-3 text-xs text-teks-lembut">{log.rincian || "—"}</td>
+                    <td className="px-5 py-2.5 text-teks-lembut whitespace-nowrap">{new Date(log.timestamp).toLocaleString("id-ID")}</td>
+                    <td className="px-5 py-2.5 font-semibold text-teks">{log.user}</td>
+                    <td className="px-5 py-2.5"><span className="rounded bg-utama/10 text-utama px-2 py-0.5 text-[10px] font-bold">{log.aksi}</span></td>
+                    <td className="px-5 py-2.5 text-teks-lembut">{log.rincian || "—"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -20,9 +20,7 @@ export async function unggahFotoLangsung(formData) {
   const namaFile = `produk-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const buf = Buffer.from(await file.arrayBuffer());
 
-  const { error } = await sbServer.storage.from("image").upload(namaFile, buf, {
-    contentType: file.type || "image/jpeg", upsert: true,
-  });
+  const { error } = await sbServer.storage.from("image").upload(namaFile, buf, { contentType: file.type || "image/jpeg", upsert: true });
   if (error) return { error: "Gagal mengunggah foto." };
 
   const { data: { publicUrl } } = sbServer.storage.from("image").getPublicUrl(namaFile);
@@ -40,14 +38,11 @@ export async function buatDeskripsiAI(arg1, arg2) {
   if (!nama) return { error: "Nama produk harus diisi." };
 
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return { deskripsi: `${nama} adalah racikan ${kategori || "spesial"} khas ${toko.nama} dengan bahan pilihan dan cita rasa istimewa.` };
-  }
+  if (!apiKey) return { deskripsi: `${nama} adalah racikan ${kategori || "spesial"} khas ${toko.nama} dengan bahan pilihan dan cita rasa istimewa.` };
 
   const prompt = `Buatkan deskripsi produk singkat (2 kalimat) tanpa emoji untuk "${toko.nama}". Menu: ${nama}, Kategori: ${kategori}. Bahasa Indonesia.`;
   try {
-    const ctrl = new AbortController();
-    const tm = setTimeout(() => ctrl.abort(), 6000);
+    const ctrl = new AbortController(), tm = setTimeout(() => ctrl.abort(), 6000);
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${apiKey}`, {
       method: "POST", signal: ctrl.signal, headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }] }),

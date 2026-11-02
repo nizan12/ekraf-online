@@ -13,11 +13,7 @@ export default function HalamanFavorit() {
   useEffect(() => {
     setMounted(true);
     setDaftarFavorit(ambilFavorit());
-
-    function handleUpdate() {
-      setDaftarFavorit(ambilFavorit());
-    }
-
+    const handleUpdate = () => setDaftarFavorit(ambilFavorit());
     window.addEventListener("favorit-updated", handleUpdate);
     window.addEventListener("storage", handleUpdate);
     return () => {
@@ -27,16 +23,13 @@ export default function HalamanFavorit() {
   }, []);
 
   function handleHapus(id, e) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     const updated = daftarFavorit.filter((p) => p.id !== id);
     setDaftarFavorit(updated);
     simpanFavorit(updated);
   }
 
-  if (!mounted) {
-    return <div className="py-12 text-center text-sm text-teks-lembut">Memuat produk favorit…</div>;
-  }
+  if (!mounted) return <div className="py-12 text-center text-xs text-teks-lembut">Memuat produk favorit…</div>;
 
   return (
     <div className="py-8 flex flex-col gap-6">
@@ -49,9 +42,7 @@ export default function HalamanFavorit() {
       </div>
 
       {daftarFavorit.length === 0 ? (
-        <div className="py-16 text-center text-sm text-teks-lembut">
-          Belum ada produk favorit yang disimpan. Tandai ikon hati di kartu produk!
-        </div>
+        <div className="py-16 text-center text-xs text-teks-lembut">Belum ada produk favorit yang disimpan. Tandai ikon hati di kartu produk!</div>
       ) : (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           {daftarFavorit.map((p) => (
@@ -61,17 +52,9 @@ export default function HalamanFavorit() {
               </Link>
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-teks-lembut">{p.kategori}</span>
-                <button
-                  type="button"
-                  onClick={(e) => handleHapus(p.id, e)}
-                  className="text-xs text-red-500 hover:underline cursor-pointer"
-                >
-                  Hapus
-                </button>
+                <button type="button" onClick={(e) => handleHapus(p.id, e)} className="text-xs text-red-500 hover:underline cursor-pointer">Hapus</button>
               </div>
-              <Link href={`/produk/${p.id}`} className="font-bold text-sm text-teks hover:text-utama truncate">
-                {p.nama}
-              </Link>
+              <Link href={`/produk/${p.id}`} className="font-bold text-xs sm:text-sm text-teks hover:text-utama truncate">{p.nama}</Link>
               <div className="mt-auto flex items-center justify-between pt-1">
                 <span className="font-extrabold text-xs text-harga">{formatRupiah(p.harga)}</span>
                 <TombolKeranjang produk={p} className="h-8 px-2.5 text-xs" />
