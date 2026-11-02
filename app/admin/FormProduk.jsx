@@ -116,7 +116,18 @@ export default function FormProduk({ produk = {}, varianAwal = [], kategoriList 
         <div>
           <div className="flex justify-between items-center mb-1">
             <label className="text-xs font-semibold text-teks-lembut">Deskripsi Produk</label>
-            <button type="button" onClick={handleBuatDeskripsiAI} disabled={loadingAI} className="text-xs text-utama hover:underline cursor-pointer">{loadingAI ? "Menulis…" : "✨ Buat AI"}</button>
+            <button type="button" onClick={handleBuatDeskripsiAI} disabled={loadingAI} className="inline-flex items-center gap-1 text-xs text-utama hover:underline cursor-pointer">
+              {loadingAI ? (
+                "Menulis…"
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                    <path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a8.001 8.001 0 0 1-6.208 6.208l-1.192.24a1 1 0 0 0 0 1.96l1.192.24a8.001 8.001 0 0 1 6.208 6.208l.24 1.192a1 1 0 0 0 1.96 0l.24-1.192a8.001 8.001 0 0 1 6.208-6.208l1.192-.24a1 1 0 0 0 0-1.96l-1.192-.24a8.001 8.001 0 0 1-6.208-6.208l-.24-1.192Z" />
+                  </svg>
+                  <span>Buat AI</span>
+                </>
+              )}
+            </button>
           </div>
           {pesanAI?.sukses && <p className="text-[11px] text-emerald-600 mb-1">{pesanAI.sukses}</p>}
           {pesanAI?.error && <p className="text-[11px] text-red-500 mb-1">{pesanAI.error}</p>}

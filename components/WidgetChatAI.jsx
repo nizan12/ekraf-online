@@ -35,12 +35,20 @@ export default function WidgetChatAI() {
     <div className="fixed bottom-4 right-4 z-40">
       {!buka ? (
         <button type="button" onClick={() => setBuka(true)} className="flex items-center gap-2 rounded-full bg-utama px-4 py-2.5 text-xs font-bold text-white shadow-lg hover:bg-utama-gelap cursor-pointer">
-          <span>☕</span><span>Tanya Barista AI</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0">
+            <path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM6.166 5.106a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 0 1-1.06 1.061L6.165 6.167a.75.75 0 0 1 0-1.06ZM17.834 5.106a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 1 1-1.061-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM2.25 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75ZM19.5 11.25a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5h-1.5ZM5.25 14.25A3.75 3.75 0 0 1 9 10.5h6a3.75 3.75 0 0 1 3.75 3.75v1.5a3.75 3.75 0 0 1-3.75 3.75H9a3.75 3.75 0 0 1-3.75-3.75v-1.5Z" />
+          </svg>
+          <span>Tanya Barista AI</span>
         </button>
       ) : (
         <div className="flex h-[420px] w-[310px] sm:w-[350px] flex-col rounded-3xl border border-garis bg-permukaan shadow-2xl overflow-hidden">
           <div className="flex items-center justify-between border-b border-garis bg-utama px-3.5 py-2.5 text-white">
-            <div className="flex items-center gap-1.5"><span className="text-sm">☕</span><span className="font-bold text-xs">Barista AI Nuran</span></div>
+            <div className="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0">
+                <path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+              </svg>
+              <span className="font-bold text-xs">Barista AI Nuran</span>
+            </div>
             <button type="button" onClick={() => setBuka(false)} className="text-white/80 hover:text-white text-xs cursor-pointer">✕</button>
           </div>
           <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2 text-xs">

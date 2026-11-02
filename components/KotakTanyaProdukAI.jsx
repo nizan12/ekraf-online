@@ -31,7 +31,9 @@ export default function KotakTanyaProdukAI({ produk }) {
   return (
     <div className="mt-8 rounded-2xl border border-utama/30 bg-permukaan/60 p-5 shadow-xs">
       <div className="flex items-center gap-2">
-        <span className="text-base">☕</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-utama shrink-0">
+          <path d="M12 2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM6.166 5.106a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 0 1-1.06 1.061L6.165 6.167a.75.75 0 0 1 0-1.06ZM17.834 5.106a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 1 1-1.061-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM2.25 12a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75ZM19.5 11.25a.75.75 0 0 0 0 1.5h1.5a.75.75 0 0 0 0-1.5h-1.5ZM5.25 14.25A3.75 3.75 0 0 1 9 10.5h6a3.75 3.75 0 0 1 3.75 3.75v1.5a3.75 3.75 0 0 1-3.75 3.75H9a3.75 3.75 0 0 1-3.75-3.75v-1.5Z" />
+        </svg>
         <div>
           <h3 className="text-sm font-bold text-teks">Tanya Barista AI tentang {produk.nama}</h3>
           <p className="text-xs text-teks-lembut">Tanyakan rasa, tingkat manis, atau rekomendasi camilan pendamping.</p>

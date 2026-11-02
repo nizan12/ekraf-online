@@ -79,7 +79,10 @@ export default function TombolWhatsApp({ produk, varianList = [], nomorWhatsApp 
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <a href={urlWhatsApp} target="_blank" rel="noopener noreferrer" onClick={catatKlik} className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 transition cursor-pointer shadow-sm">
-          <span>💬</span><span>Pesan via WhatsApp</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0">
+            <path fillRule="evenodd" d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.177 7.152.52 1.32.194 2.348 1.22 2.542 2.541.343 2.335.52 4.722.52 7.152 0 .97-.028 1.933-.082 2.89-.138 2.457-2.094 4.398-4.555 4.475-1.748.055-3.504.083-5.277.083-1.127 0-2.247-.01-3.356-.03a48.775 48.775 0 0 1-3.414.996.75.75 0 0 1-.87-.99c.307-.824.57-1.677.785-2.549A48.653 48.653 0 0 1 2.25 12.463c0-2.43.177-4.817.52-7.152.194-1.321 1.222-2.347 2.542-2.541Z" clipRule="evenodd" />
+          </svg>
+          <span>Pesan via WhatsApp</span>
         </a>
         <TombolKeranjang produk={{ ...produk, harga: hargaSatuan, nama: namaProduk }} jumlah={jumlah} varian={varianAktif?.nama} className="py-2.5 text-xs" />
       </div>
