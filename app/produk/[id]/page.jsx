@@ -4,7 +4,6 @@ import TombolWhatsApp, { buatLinkWhatsApp } from "@/app/TombolWhatsApp";
 export { buatLinkWhatsApp };
 import TombolBagikan from "./TombolBagikan";
 import TombolFavorit from "@/components/TombolFavorit";
-import TombolBandingkan from "@/components/TombolBandingkan";
 import TerakhirDilihat from "@/components/TerakhirDilihat";
 import GaleriFoto from "@/components/GaleriFoto";
 import KartuProduk from "@/components/KartuProduk";
@@ -99,7 +98,6 @@ export default async function HalamanDetailProduk({ params }) {
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${isHabis ? "bg-red-100 text-red-600" : "bg-utama/10 text-utama"}`}>{isHabis ? "Stok Habis" : `Tersedia (${produk.stok} porsi)`}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <TombolBandingkan produk={produk} />
               <TombolBagikan namaProduk={produk.nama} />
               <TombolFavorit produk={produk} ikonOnly />
             </div>

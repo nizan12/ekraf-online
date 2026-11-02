@@ -2,7 +2,6 @@ import Link from "next/link";
 import { formatRupiah, ambilFotoUtama } from "@/lib/format";
 import TombolKeranjang from "@/components/TombolKeranjang";
 import TombolFavorit from "@/components/TombolFavorit";
-import TombolBandingkan from "@/components/TombolBandingkan";
 
 export default function KartuProduk({ produk }) {
   const isHabis = produk.stok === 0 || produk.status_stok === "habis";
@@ -23,7 +22,6 @@ export default function KartuProduk({ produk }) {
         </div>
         <span className={`absolute right-2 top-2 rounded px-1.5 py-0.5 text-[10px] font-semibold text-white ${isHabis ? "bg-red-600/90" : "bg-emerald-600/85"}`}>{isHabis ? "Stok Habis" : `Stok: ${produk.stok}`}</span>
         <div className="absolute bottom-2 right-2 flex gap-1 z-10">
-          <TombolBandingkan produk={produk} ikonOnly />
           <TombolFavorit produk={produk} />
         </div>
       </Link>
